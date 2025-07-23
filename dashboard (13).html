@@ -1,0 +1,573 @@
+
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ипотечный дашборд</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            :root {
+                --primary: #5a7ae9;
+                --primary-light: #7d9aff;
+                --secondary: #6d5acf;
+                --success: #0da371;
+                --danger: #d93c3c;
+                --warning: #e0901a;
+                --info: #1c93c7;
+                --light: #f8fafc;
+                --dark: #1e293b;
+                --gray: #64748b;
+                --card-bg: #ffffff;
+                --text-color: #334155;
+                --border-radius: 16px;
+                --box-shadow: 0 6px 15px -5px rgba(0,0,0,0.05), 0 5px 8px -4px rgba(0,0,0,0.03);
+                --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #f0f4f8, #e2e8f0);
+                padding: 20px;
+                color: var(--text-color);
+                min-height: 100vh;
+            }
+            
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            
+            .header {
+                text-align: center;
+                margin-bottom: 30px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+                margin-bottom: 5px;
+                background: linear-gradient(90deg, var(--primary), var(--secondary));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                font-weight: 800;
+            }
+            
+            .header p {
+                color: var(--gray);
+                font-size: 1.05rem;
+                margin-top: 12px;
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                line-height: 1.6;
+            }
+            
+            /* Стили горизонтального аккордеона */
+            .accordion {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+            
+            .accordion-item {
+                background: white;
+                border-radius: var(--border-radius);
+                box-shadow: var(--box-shadow);
+                overflow: hidden;
+                transition: var(--transition);
+            }
+            
+            .accordion-header {
+                padding: 18px 25px;
+                background: linear-gradient(135deg, #6a7edf, #7d6cdb);
+                color: white;
+                font-weight: 700;
+                font-size: 1.2rem;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .accordion-header i {
+                transition: var(--transition);
+            }
+            
+            .accordion-item.active .accordion-header i {
+                transform: rotate(180deg);
+            }
+            
+            .accordion-content {
+                padding: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease-out;
+            }
+            
+            .accordion-item.active .accordion-content {
+                max-height: 2000px;
+            }
+            
+            /* Стили карточек */
+            .dashboard {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+                padding: 25px;
+            }
+            
+            .kpi-card {
+                background: var(--card-bg);
+                border-radius: var(--border-radius);
+                box-shadow: var(--box-shadow);
+                padding: 25px;
+                text-align: center;
+                transition: var(--transition);
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .kpi-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 20px -5px rgba(0,0,0,0.1);
+            }
+            
+            .kpi-subcategory {
+                font-size: 1.1rem;
+                font-weight: 700;
+                margin-bottom: 15px;
+                color: #5a67d8;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .kpi-value {
+                font-size: 2.5rem;
+                font-weight: 800;
+                margin: 15px 0;
+                color: var(--dark);
+                flex-grow: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                z-index: 1;
+                line-height: 1.2;
+            }
+            
+            .kpi-period {
+                font-size: 0.95rem;
+                color: var(--gray);
+                margin-bottom: 15px;
+                font-weight: 500;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .kpi-change-container {
+                background: #f1f5f9;
+                border-radius: 10px;
+                padding: 12px;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                position: relative;
+                z-index: 1;
+                border: 1px solid #e2e8f0;
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+            
+            .trend-up {
+                color: var(--success);
+            }
+            
+            .trend-down {
+                color: var(--danger);
+            }
+            
+            .period-type {
+                font-size: 0.85rem;
+                color: var(--gray);
+                font-weight: normal;
+                margin-left: 5px;
+            }
+            
+            .footer {
+                text-align: center;
+                margin-top: 30px;
+                padding: 25px;
+                color: var(--gray);
+                font-size: 0.9rem;
+            }
+            
+            /* Адаптивность */
+            @media (max-width: 992px) {
+                .dashboard {
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                }
+                
+                .kpi-value {
+                    font-size: 2.2rem;
+                }
+            }
+            
+            @media (max-width: 768px) {
+                .kpi-value {
+                    font-size: 2rem;
+                }
+                
+                .header h1 {
+                    font-size: 2rem;
+                }
+                
+                .accordion-header {
+                    font-size: 1.1rem;
+                    padding: 15px 20px;
+                }
+            }
+            
+            @media (max-width: 576px) {
+                .kpi-card {
+                    padding: 20px;
+                }
+                
+                .kpi-value {
+                    font-size: 1.8rem;
+                }
+                
+                .kpi-change-container {
+                    font-size: 1rem;
+                    padding: 10px;
+                }
+                
+                .dashboard {
+                    padding: 15px;
+                    gap: 15px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-chart-line"></i> Ипотека</h1>
+            </div>
+            <div class="accordion">
+    
+            <div class="accordion-item active" data-tab="Количество кредитных организаций">
+                <div class="accordion-header">
+                    <span>Количество кредитных организаций</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="dashboard">
+        
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК</div>
+                    <div class="kpi-value">231</div>
+                    <div class="kpi-period">за 1 кв. 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-down">▼</span>
+                            <span>-2.12%</span>
+                            <span class="period-type">(QoQ)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК по ДДУ</div>
+                    <div class="kpi-value">87</div>
+                    <div class="kpi-period">за 1 кв. 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-down">▼</span>
+                            <span>-5.43%</span>
+                            <span class="period-type">(QoQ)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК на цели ИЖС</div>
+                    <div class="kpi-value">127</div>
+                    <div class="kpi-period">за 1 кв. 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+126.79%</span>
+                            <span class="period-type">(QoQ)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">Льготная ипотека</div>
+                    <div class="kpi-value">48</div>
+                    <div class="kpi-period">за 1 кв. 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-down">▼</span>
+                            <span>-9.43%</span>
+                            <span class="period-type">(QoQ)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item " data-tab="Объем выданных кредитов">
+                <div class="accordion-header">
+                    <span>Объем выданных кредитов</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="dashboard">
+        
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК</div>
+                    <div class="kpi-value">287 млн</div>
+                    <div class="kpi-period">май 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-down">▼</span>
+                            <span>-1.02%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК по ДДУ</div>
+                    <div class="kpi-value">167 млн</div>
+                    <div class="kpi-period">май 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+0.31%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК на цели ИЖС</div>
+                    <div class="kpi-value">39 млн</div>
+                    <div class="kpi-period">01.06.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+6.42%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">Льготная ипотека</div>
+                    <div class="kpi-value">1.19 трлн</div>
+                    <div class="kpi-period">01.05.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+31.96%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item " data-tab="Остаток ссудной задолженности">
+                <div class="accordion-header">
+                    <span>Остаток ссудной задолженности</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="dashboard">
+        
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК</div>
+                    <div class="kpi-value">19.46 млрд</div>
+                    <div class="kpi-period">01.06.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+0.63%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК по ДДУ</div>
+                    <div class="kpi-value">4.28 млрд</div>
+                    <div class="kpi-period">01.06.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-down">▼</span>
+                            <span>-1.1%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item " data-tab="Просроченная задолженность">
+                <div class="accordion-header">
+                    <span>Просроченная задолженность</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="dashboard">
+        
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК</div>
+                    <div class="kpi-value">137 млн</div>
+                    <div class="kpi-period">01.06.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+8.0%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК по ДДУ</div>
+                    <div class="kpi-value">13 млн</div>
+                    <div class="kpi-period">01.06.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+5.6%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="accordion-item " data-tab="Количество выданных кредитов">
+                <div class="accordion-header">
+                    <span>Количество выданных кредитов</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-content">
+                    <div class="dashboard">
+        
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК</div>
+                    <div class="kpi-value">63 261</div>
+                    <div class="kpi-period">май 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-down">▼</span>
+                            <span>-3.04%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК по ДДУ</div>
+                    <div class="kpi-value">29 197</div>
+                    <div class="kpi-period">май 2025</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-down">▼</span>
+                            <span>-1.57%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">ИЖК на цели ИЖС</div>
+                    <div class="kpi-value">10 489</div>
+                    <div class="kpi-period">01.06.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+0.11%</span>
+                            <span class="period-type">(MoM)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="kpi-card">
+                    <div class="kpi-subcategory">Льготная ипотека</div>
+                    <div class="kpi-value">0.27 млн</div>
+                    <div class="kpi-period">01.05.25</div>
+                    <div>
+                        <div class="kpi-change-container">
+                            <span class="trend-up">▲</span>
+                            <span>+30.52%</span>
+                            <span class="period-type">(YoY)</span>
+                        </div>
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            </div>
+            
+            <div class="footer">
+                <p>Обновлено: <strong>июнь 2025</strong> | Источник: <strong>cbr.ru</strong></p>
+            </div>
+        </div>
+        
+        <script>
+            // Переключение аккордеона
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const accordionItem = header.parentElement;
+                    const isActive = accordionItem.classList.contains('active');
+                    
+                    // Закрываем все элементы
+                    document.querySelectorAll('.accordion-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // Открываем текущий, если он не был активным
+                    if (!isActive) {
+                        accordionItem.classList.add('active');
+                    }
+                });
+            });
+        </script>
+    </body>
+    </html>
+    
