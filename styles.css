@@ -69,7 +69,41 @@ body.detail-view-active {
     letter-spacing: -0.3px;
 }
 
+/* Стили для контейнера кнопок в шапке */
+.header-buttons {
+    position: fixed;
+    left: 20px;
+    top: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1100;
+}
 
+/* Кнопка "Назад" */
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 15px;
+    height: 40px;
+    background: linear-gradient(135deg, #4a67d8, #5e4fc9);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #3a57c8, #4e3fb9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
 
 /* Стиль для заголовков категорий */
 .category-title {
@@ -114,9 +148,6 @@ body.detail-view-active {
 }
 
 .sidebar-toggle {
-    position: fixed;
-    left: 20px;
-    top: 25px;
     background: linear-gradient(135deg, #4a67d8, #5e4fc9);
     border: none;
     padding: 0 15px;
@@ -128,20 +159,18 @@ body.detail-view-active {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1100;
     transition: var(--transition);
     gap: 10px;
     font-weight: 600;
 }
-
-
 
 body.sidebar-open .sidebar-toggle {
     background: rgba(255,255,255,0.2);
     color: white;
 }
 
-body.detail-view-active .sidebar-toggle {
+body.detail-view-active .sidebar-toggle,
+body.detail-view-active .back-button {
     display: none;
 }
 
@@ -225,6 +254,20 @@ body.detail-view-active .sidebar-toggle {
 
 .menu-item.active .submenu-toggle {
     transform: rotate(180deg);
+}
+
+/* Контейнер для QR-кода */
+.qr-code-container {
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 20px;
+}
+
+.qr-code-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
 
 /* Переключение вкладок */
@@ -601,9 +644,17 @@ body.detail-view-active .sidebar-toggle {
         padding-top: 80px;
     }
 
-    .sidebar-toggle {
+    .header-buttons {
         left: 15px;
         top: 25px;
+    }
+
+    .back-text {
+        display: none;
+    }
+
+    .qr-code-container {
+        display: none;
     }
 
     .detail-header {
